@@ -1,45 +1,35 @@
 class Assembunny(object):
 
-  def __init__(self):
-    self.a = self.b = self.d = self.pos = 0
-    self.c = 1
+  def __init__(self, registers):
+    self.registers = registers
 
   def execute(self, code):
-    while self.pos < len(code):
-      self.process(code[self.pos])
+    pos = 0
+    while pos < len(code):
+      pos += self.process(code[pos])
 
   def process(self, line):
-    instruction = line[0]
+    instruction, x, y = line[0], line[1], line[-1]
 
-    if instruction == 'cpy':
-      self.copy(line[1], line[2])
-    elif instruction == 'inc':
-      self.inc(line[1])
-    elif instruction == 'dec':
-      self.dec(line[1])
-    elif instruction == 'jnz':
-      self.jnz(line[1], line[2])
+    if   instruction == 'cpy': return self.copy(x, y)
+    elif instruction == 'inc': return self.inc(x)
+    elif instruction == 'dec': return self.dec(x)
+    elif instruction == 'jnz': return self.jnz(x, y)
 
-  def copy(self, newval, register):
-    if type(newval) == int:
-      setattr(self, register, newval)
-    else:
-      setattr(self, register, getattr(self, newval))
-    self.pos = self.pos + 1
+  def val(self, x):
+    return self.registers[x] if x in self.registers else x
+
+  def copy(self, val, register):
+    self.registers[register] = self.val(val)
+    return 1
 
   def inc(self, register):
-    oldval = getattr(self, register)
-    setattr(self, register, oldval + 1)
-    self.pos = self.pos + 1
+    self.registers[register] += 1
+    return 1
 
   def dec(self, register):
-    oldval = getattr(self, register)
-    setattr(self, register, oldval - 1)
-    self.pos = self.pos + 1
+    self.registers[register] -= 1
+    return 1
 
   def jnz(self, val, jump):
-    if type(val) != int: val = getattr(self, val)
-    if val == 0:
-      self.pos = self.pos + 1
-    else:
-      self.pos = self.pos + jump
+    return 1 if self.val(val) == 0 else jump

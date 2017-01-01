@@ -34,8 +34,8 @@ input = map(lambda x: x.split(" "), input)
 input = map(lambda x: map(toint, x), input)
 input = map(tuple, input)
 
-assembunny = Assembunny()
+assembunny = Assembunny(dict(a=0, b=0, c=0, d=0))
 
 assembunny.execute(input)
 
-print assembunny.a
+print assembunny.registers['a']
