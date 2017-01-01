@@ -16,18 +16,14 @@ defmodule Assembunny do
     {%{ registers | reg => registers[reg] - 1 }, pos + 1}
   end
 
-  def process(registers, {:jnz, val, jump}, pos) when is_integer(val) do
-    if val > 0 do
-      {registers, pos + jump}
-    else
-      {registers, pos + 1}
-    end
-  end
   def process(registers, {:jnz, val, jump}, pos) do
-    if registers[val] > 0 do
-      {registers, pos + jump}
-    else
-      {registers, pos + 1}
+    cond do
+      is_integer(val) && val > 0 ->
+        {registers, pos + jump}
+      is_atom(val) && registers[val] > 0 ->
+        {registers, pos + jump}
+      true ->
+        {registers, pos + 1}
     end
   end
 
