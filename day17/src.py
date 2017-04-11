@@ -36,7 +36,10 @@ def possible_moves(code, state):
 def new_possible_moves(code, states):
     new_moves = []
     for state in states:
-        new_moves.append(possible_moves(code, state))
+        if not vault_accessed(state):
+            new_moves.append(possible_moves(code, state))
+        else:
+            new_moves.append([state])
     return [item for sublist in new_moves for item in sublist]
 
 def vault_accessed(state):
@@ -50,6 +53,19 @@ def shortest_path(passcode):
         moves = new_possible_moves(passcode, moves)
     for state in moves:
         if vault_accessed(state) is not None: return vault_accessed(state)
+
+def get_path_length(state):
+    [path, pos] = state
+    return len(path)
+
+def longest_path(passcode):
+    moves = [['', [0, 0]]]
+    last_moves = []
+    while moves != last_moves:
+        last_moves = moves
+        moves = new_possible_moves(passcode, moves)
+    return max(get_path_length(state) for state in moves)
+
 
 passcode = 'hijkl'
 md5 = md5_hash_of(passcode)
@@ -66,10 +82,14 @@ assert new_possible_moves(passcode, after_one_step) == [['DU', [0, 0]], ['DR', [
 
 passcode = 'ihgpwlah'
 assert shortest_path(passcode) == 'DDRRRD'
+assert longest_path(passcode) == 370
 passcode = 'kglvqrro'
 assert shortest_path(passcode) == 'DDUDRLRRUDRD'
+assert longest_path(passcode) == 492
 passcode= 'ulqzkmiv'
 assert shortest_path(passcode) == 'DRURDRUDDLLDLUURRDULRLDUUDDDRR'
+assert longest_path(passcode) == 830
 
 passcode = 'qljzarfv'
 print shortest_path(passcode)
+print longest_path(passcode)
