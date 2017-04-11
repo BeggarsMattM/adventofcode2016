@@ -1,5 +1,7 @@
 defmodule Assembunny do
 
+  def process(registers, instruction, pos \\ 0)
+
   def process(registers, {:cpy, val, reg}, pos) do
     if Map.has_key?(registers, val) do
       {%{ registers | reg => registers[val] }, pos + 1}
@@ -27,12 +29,15 @@ defmodule Assembunny do
     end
   end
 
-  def execute(registers, code, pos) when pos >= length(code) do
-    registers
-  end
-  def execute(registers, code, pos) do
+  def execute(registers, code, pos \\ 0)
+
+  def execute(registers, code, pos) when pos < length(code) do
     {registers, newpos} = process(registers, Enum.at(code, pos), pos)
     execute(registers, code, newpos)
+  end
+
+  def execute(registers, _, _) do
+    registers
   end
 
 end
